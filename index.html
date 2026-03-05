@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WormInfo - Deworming Awareness</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM (React 18) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Ensure libraries are correctly referenced from the global scope
+        const { useState, useEffect, useRef } = window.React;
+        const ReactDOM = window.ReactDOM;
+
+        // --- ICONS ---
+        const CheckCircle2 = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        );
+
+        // --- CONTENT CONFIGURATION ---
+        const CONTENT = {
+            header: {
+                logo: "https://github.com/Sayeed127/Almex/blob/143e27c72df333c31ad91221a391f56d8c26d0e0/Image/Almex_BRC_NOV_2025-01.png?raw=true", 
+                alt: "WormInfo Logo"
+            },
+            hero: {
+                title: "এক ডোজেই বাজিমাত!",
+                subtitle: "কৃমি হবে কুপোকাত....",
+                buttonText: "আজ থেকেই শুরু হোক কৃমির বিরুদ্ধে যুদ্ধ",
+                image: "https://github.com/Sayeed127/Almex/blob/main/Image/1st%20image%20updated.png?raw=true", 
+                styles: {
+                    backgroundColor: "#fdf3e4",
+                    titleColor: "#2d9cdb",
+                    subtitleColor: "#2d9cdb",
+                    buttonColor: "#2D9CDB",
+                    align: "left", 
+                    titleSize: "2.20", 
+                    buttonSize: "1.1", 
+                    imageMaxWidth: "100%", 
+                    imageHeight: "auto"      
+                }
+            },
+            myths: {
+                title: "চলুন জেনে নেয়া যাক কৃমি নিয়ে কিছু ভ্রান্ত ধারণা:",
+                subtitle: "", 
+                items: [
+                    { myth: "মিষ্টি জাতীয় খাবার খেলে কৃমি হয়" },
+                    { myth: "কৃমি পরিপাকে বা খাবার হজমে সহায়তা করে" },
+                    { myth: "কৃমির ওষুধ দিনে খাওয়া ঠিক নয়, রাতে খেতে হয়" },
+                    { myth: "কৃমির ক্ষতিকর প্রভাব শুধু শিশুদের মধ্যেই সীমাবদ্ধ " }
+                ],
+                image: "https://github.com/Sayeed127/Almex/blob/main/Image/Warn.png?raw=true",
+                styles: {
+                    backgroundColor: "#f9d5af",
+                    titleColor: "#EB5757",
+                    cardBackground: "#FFF9F0",
+                    cardBorder: "#F2C94C",
+                    textColor: "#374151",
+                    imageMaxWidth: "100%", 
+                    imageHeight: "auto"    
+                }
+            },
+            reality: {
+                text: "অনেকে এসব ধারনা পোষণ করেন বাস্তবে যার কোন ভিত্তি নেই",
+                styles: {
+                    backgroundColor: "#FFF9F0",
+                    textColor: "#EB5757",
+                    align: "center"
+                }
+            },
+            causes: {
+                title: "কৃমি আক্রমণের সম্ভাব্য পথগুলো আমাদের জানতে হবে",
+                footnote: "কৃমি সংক্রামক, তাই একজনের হলে পরিবারের সবার হওয়ার সম্ভাবনা থাকে", 
+                items: [
+                    "অপরিচ্ছন্ন পরিবেশ",
+                    "অস্বাস্থ্যকর ও কম সিদ্ধ খাবার (বিশেষ করে মাছ বা মাংস)",
+                    "দূষিত মাটি ও পানির সংস্পর্শ",
+                    "খাবার গ্রহণের আগে বা টয়লেট ব্যবহারের পর হাত ভালোভাবে না ধোয়া"
+                ],
+                image: "https://github.com/Sayeed127/Almex/blob/main/Image/Map.png?raw=true",
+                styles: {
+                    backgroundColor: "#d7ffea",
+                    titleColor: "#2D9CDB",
+                    cardBackground: "#FFFFFF",
+                    textColor: "#374151",
+                    footnoteBackground: "#FFF9F0", 
+                    footnoteTextColor: "#EB5757",
+                    imageMaxWidth: "100%",
+                    imageHeight: "auto"
+                }
+            },
+            symptoms: {
+                title: "আপনার শরীর কি এই বিপদ সংকেতগুলো দিচ্ছে?",
+                items: [
+                    "১. পেট ব্যথা ও ফোলা ভাব",
+                    "২. মলদ্বারে চুলকানি",
+                    "৩. বমি বমি ভাব বা বমি হওয়া",
+                    "৪. ক্ষুধামন্দা",
+                    "৫. ডায়রিয়া",
+                    "৬. রক্তশূন্যতা",
+                    "৭. ওজন হ্রাস",
+                    "৮. দুর্বলতা বা ক্লান্তি অনুভব করা",
+                    "৯. মাথা ব্যাথা ও খিটখিটে মেজাজ"
+                ],
+                styles: {
+                    backgroundColor: "#f9d5af",
+                    titleColor: "#EB5757",
+                    cardBackground: "#FFFFFF",
+                    cardTextColor: "#4B5563",
+                    align: "center"
+                }
+            },
+            footer: {
+                title: "লক্ষণ মিলে গেলেই চূড়ান্ত সতর্কবার্তা🚨",
+                description: "আর দেরি নয়! এখনই চিকিৎসকের শরণাপন্ন হোন!",
+                footnote: "কৃমিকে বংশবিস্তারের আর এক মুহূর্তও সুযোগ দেবেন না!",
+                image: "https://github.com/Sayeed127/Almex/blob/main/Image/Alert.png?raw=true",
+                styles: {
+                    backgroundColor: "#2D9CDB",
+                    titleColor: "#FFFFFF",
+                    textColor: "#FFFFFF",
+                    align: "center",
+                    footnoteBackground: "#FFF9F0", 
+                    footnoteTextColor: "#EB5757",
+                    imageMaxWidth: "600px",
+                    imageHeight: "auto"
+                }
+            },
+            extraSection: {
+                title: "আক্রান্ত হননি?",
+                description: "খুব ভালো খবর! কিন্তু সাবধানতা এখনো শেষ হয়নি! শত্রুকে সীমানার বাইরে রাখতে আমাদের 'সুরক্ষা নিয়মগুলো' (হাত ধোয়া, সঠিক খাবার, পরিচ্ছন্নতা) কড়াকড়িভাবে মেনে চলতে হবে!",
+                items: [
+                    "প্রতি ছয় মাস অন্তর অন্তর ডাক্তারের পরামর্শ অনুযায়ী ওষুধ সেবন করতে হবে",
+                    "পরিবারের সকল সদস্যকে একসাথে ওষুধ সেবন করতে হবে"
+                ],
+                footnote: null,
+                footnoteLogo: "https://github.com/Sayeed127/Almex/blob/143e27c72df333c31ad91221a391f56d8c26d0e0/Image/Almex_BRC_NOV_2025-01.png?raw=true",
+                image: "https://github.com/Sayeed127/Almex/blob/070aa6504827ac280e15c087f8517fbda2d4dda3/Image/ExtraSection.png?raw=true", 
+                styles: {
+                    backgroundColor: "#ffffff",
+                    titleColor: "#2D9CDB",
+                    textColor: "#4B5563",
+                    align: "left",
+                    footnoteBackground: "#FFF9F0",
+                    footnoteTextColor: "#EB5757",
+                    imageMaxWidth: "100%",
+                    imageHeight: "auto"
+                }
+            }
+        };
+
+        // --- ANIMATION COMPONENT ---
+        const ScrollReveal = ({ children, direction = 'up', className = '' }) => {
+            const [isVisible, setIsVisible] = useState(false);
+            const ref = useRef(null);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting) {
+                            setIsVisible(true);
+                            observer.unobserve(entry.target);
+                        }
+                    },
+                    { threshold: 0.15 }
+                );
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, []);
+
+            const getTransform = () => {
+                switch(direction) {
+                    case 'left': return '-translate-x-20';
+                    case 'right': return 'translate-x-20';
+                    case 'up': return 'translate-y-20';
+                    default: return 'translate-y-0';
+                }
+            };
+
+            return (
+                <div 
+                    ref={ref} 
+                    className={`transition-all duration-1000 ease-out ${className} ${
+                        isVisible ? 'opacity-100 translate-x-0 translate-y-0' : `opacity-0 ${getTransform()}`
+                    }`}
+                >
+                    {children}
+                </div>
+            );
+        };
+
+        // --- MAIN APP COMPONENT ---
+        const App = () => {
+            const content = CONTENT;
+
+            return (
+                <div className="font-sans text-gray-800 antialiased selection:bg-blue-100 selection:text-blue-900 min-h-screen bg-white">
+                    {/* Header */}
+                    <header className="py-5 absolute w-full top-0 z-20">
+                        <div className="max-w-7xl mx-auto px-5">
+                            <img 
+                                src={content.header.logo} 
+                                alt={content.header.alt} 
+                                className="h-28 md:h-48 w-auto object-contain" 
+                            />
+                        </div>
+                    </header>
+
+                    {/* Hero Section */}
+                    <section 
+                        style={{ backgroundColor: content.hero.styles.backgroundColor }} 
+                        className="pt-36 pb-16 md:pt-64 md:pb-20 relative transition-all duration-300 min-h-[500px] md:min-h-[600px] flex items-center"
+                    >
+                        <div className="max-w-7xl mx-auto px-5 relative z-10 w-full">
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+                                <div className="order-last md:order-first md:col-span-7" style={{ textAlign: content.hero.styles.align }}>
+                                    <ScrollReveal direction="left">
+                                        <h1 
+                                            style={{ 
+                                                color: content.hero.styles.titleColor,
+                                                fontSize: `clamp(2rem, 5vw + 1rem, ${content.hero.styles.titleSize}rem)`
+                                            }}
+                                            className="font-bold mb-3 leading-tight"
+                                        >
+                                            {content.hero.title}
+                                        </h1>
+                                        <h2 
+                                            style={{ color: content.hero.styles.subtitleColor }}
+                                            className="text-2xl md:text-3xl lg:text-4xl font-normal mb-8"
+                                        >
+                                            {content.hero.subtitle}
+                                        </h2>
+                                    </ScrollReveal>
+
+                                    <button 
+                                        style={{ 
+                                            backgroundColor: content.hero.styles.buttonColor,
+                                            fontSize: `clamp(1rem, 2vw + 0.5rem, ${content.hero.styles.buttonSize}rem)`
+                                        }}
+                                        className="text-white font-semibold px-6 py-3 md:px-8 md:py-4 rounded-full shadow-lg whitespace-nowrap"
+                                    >
+                                        {content.hero.buttonText}
+                                    </button>
+                                </div>
+
+                                <div className="md:col-span-5 flex justify-center">
+                                     <ScrollReveal direction="right" className="w-full">
+                                        {content.hero.image ? (
+                                            <img 
+                                                src={content.hero.image} 
+                                                alt="Hero" 
+                                                style={{ 
+                                                    maxWidth: content.hero.styles.imageMaxWidth,
+                                                    height: content.hero.styles.imageHeight 
+                                                }}
+                                                className="w-full h-auto rounded-3xl mx-auto object-cover" 
+                                            />
+                                        ) : (
+                                            <div className="h-[250px] md:h-[350px] w-full rounded-3xl bg-white/50 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 font-medium">
+                                                Hero Image Placeholder
+                                            </div>
+                                        )}
+                                     </ScrollReveal>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Myths Section */}
+                    <section 
+                        style={{ backgroundColor: content.myths.styles.backgroundColor }}
+                        className="py-12 md:py-20 transition-colors duration-300"
+                    >
+                        <div className="max-w-6xl mx-auto px-5 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+                            <div>
+                                <div className="mb-8">
+                                    <h3 
+                                        style={{ color: content.myths.styles.titleColor }}
+                                        className="text-2xl md:text-3xl font-bold mb-2"
+                                    >
+                                        {content.myths.title}
+                                    </h3>
+                                </div>
+                                <div className="space-y-4 md:space-y-6">
+                                    {content.myths.items.map((item, idx) => (
+                                        <div 
+                                            key={idx} 
+                                            style={{ 
+                                                backgroundColor: content.myths.styles.cardBackground,
+                                                borderColor: content.myths.styles.cardBorder,
+                                            }}
+                                            className="border-l-4 rounded-r-lg shadow-sm overflow-hidden"
+                                        >
+                                            <div className="p-4 bg-white/50 flex items-start gap-3">
+                                                <span 
+                                                    style={{ backgroundColor: content.myths.styles.titleColor }}
+                                                    className="w-2 h-2 rounded-full mt-2.5 shrink-0" 
+                                                />
+                                                <div className="text-base md:text-lg font-semibold text-gray-800">
+                                                    {item.myth}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="order-first md:order-last">
+                                <ScrollReveal direction="right">
+                                    <img 
+                                        src={content.myths.image} 
+                                        alt="Myths" 
+                                        style={{ 
+                                            maxWidth: content.myths.styles.imageMaxWidth,
+                                            height: content.myths.styles.imageHeight 
+                                        }}
+                                        className="w-full rounded-3xl mx-auto object-cover" 
+                                    />
+                                </ScrollReveal>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Reality Strip */}
+                    <div style={{ backgroundColor: content.myths.styles.backgroundColor }}>
+                        <div className="max-w-6xl mx-auto px-5 py-8 md:py-10">
+                            <div 
+                                style={{ 
+                                    backgroundColor: content.reality.styles.backgroundColor,
+                                    textAlign: content.reality.styles.align
+                                }}
+                                className="py-6 px-4 md:py-8 md:px-6 rounded-3xl transition-colors duration-300 shadow-sm"
+                            >
+                                <h4 style={{ color: content.reality.styles.textColor }} className="text-lg md:text-2xl font-bold">
+                                    {content.reality.text}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Causes Section */}
+                    <section 
+                        style={{ backgroundColor: content.causes.styles.backgroundColor }}
+                        className="py-12 md:py-20 transition-colors duration-300"
+                    >
+                        <div className="max-w-6xl mx-auto px-5 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center mb-8 md:mb-12">
+                            <div className="text-center">
+                                <ScrollReveal direction="left">
+                                    <img 
+                                        src={content.causes.image} 
+                                        alt="Causes" 
+                                        className="w-full rounded-3xl mx-auto object-cover" 
+                                    />
+                                </ScrollReveal>
+                            </div>
+                            <div>
+                                <h3 
+                                    style={{ color: content.causes.styles.titleColor }}
+                                    className="text-2xl md:text-3xl font-bold mb-6 md:mb-8"
+                                >
+                                    {content.causes.title}
+                                </h3>
+                                <ul className="space-y-3 md:space-y-4">
+                                    {content.causes.items.map((item, idx) => (
+                                        <li 
+                                            key={idx} 
+                                            style={{ 
+                                                backgroundColor: content.causes.styles.cardBackground,
+                                                color: content.causes.styles.textColor
+                                            }}
+                                            className="p-3 md:p-4 rounded-xl shadow-sm text-base md:text-lg flex items-start gap-3 transition-colors duration-300"
+                                        >
+                                            <span 
+                                                style={{ backgroundColor: content.causes.styles.titleColor }}
+                                                className="w-2 h-2 rounded-full mt-2.5 shrink-0" 
+                                            />
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="max-w-6xl mx-auto px-5">
+                            <div 
+                                style={{ 
+                                    backgroundColor: content.causes.styles.footnoteBackground,
+                                    textAlign: 'center'
+                                }}
+                                className="py-6 px-4 md:py-8 md:px-6 rounded-3xl transition-colors duration-300 shadow-sm"
+                            >
+                                <h4 style={{ color: content.causes.styles.footnoteTextColor }} className="text-lg md:text-2xl font-bold">
+                                    {content.causes.footnote}
+                                </h4>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Symptoms Section */}
+                    <section 
+                        style={{ backgroundColor: content.symptoms.styles.backgroundColor, textAlign: content.symptoms.styles.align }}
+                        className="py-12 md:py-20 transition-colors duration-300"
+                    >
+                        <div className="max-w-6xl mx-auto px-5">
+                            <h2 style={{ color: content.symptoms.styles.titleColor }} className="text-3xl md:text-4xl font-bold mb-8 md:mb-12">
+                                {content.symptoms.title}
+                            </h2>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6">
+                                {content.symptoms.items.map((item, idx) => (
+                                    <div 
+                                        key={idx} 
+                                        style={{ backgroundColor: content.symptoms.styles.cardBackground, color: content.symptoms.styles.cardTextColor }}
+                                        className="p-4 md:p-6 rounded-2xl border border-gray-100 shadow-md transition-all text-center flex items-center justify-center min-h-[100px] md:min-h-[120px]"
+                                    >
+                                        <p className="font-semibold text-base md:text-lg">{item}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer CTA */}
+                    <section 
+                        style={{ backgroundColor: content.footer.styles.backgroundColor, textAlign: content.footer.styles.align }}
+                        className="py-12 md:py-20 relative overflow-hidden transition-colors duration-300"
+                    >
+                        <div className="max-w-4xl mx-auto px-5 relative z-10">
+                            <h2 style={{ color: content.footer.styles.titleColor }} className="text-3xl md:text-4xl font-bold mb-6">
+                                {content.footer.title}
+                            </h2>
+                            <p style={{ color: content.footer.styles.textColor }} className="text-lg md:text-xl opacity-90 leading-relaxed whitespace-pre-line">
+                                {content.footer.description}
+                            </p>
+                            <div className="mt-8 md:mt-10 flex justify-center mb-8 md:mb-12">
+                                <ScrollReveal direction="up" className="flex justify-center w-full">
+                                    <img 
+                                        src={content.footer.image} 
+                                        alt="Footer Icon" 
+                                        className="h-auto rounded-3xl mx-auto object-cover max-w-full" 
+                                    />
+                                </ScrollReveal>
+                            </div>
+                        </div>
+                        <div className="max-w-6xl mx-auto px-5 relative z-10">
+                            <div 
+                                style={{ 
+                                    backgroundColor: content.footer.styles.footnoteBackground,
+                                    textAlign: 'center'
+                                }}
+                                className="py-6 px-4 md:py-8 md:px-6 rounded-3xl transition-colors duration-300 shadow-sm"
+                            >
+                                <h4 style={{ color: content.footer.styles.footnoteTextColor }} className="text-lg md:text-2xl font-bold">
+                                    {content.footer.footnote}
+                                </h4>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Extra Section */}
+                    <section 
+                        style={{ backgroundColor: content.extraSection.styles.backgroundColor }}
+                        className="py-12 md:py-20 transition-colors duration-300"
+                    >
+                        <div className="max-w-6xl mx-auto px-5 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center mb-8 md:mb-12">
+                            <div style={{ textAlign: content.extraSection.styles.align }}>
+                                <h2 style={{ color: content.extraSection.styles.titleColor }} className="text-3xl md:text-4xl font-bold mb-6">
+                                    {content.extraSection.title}
+                                </h2>
+                                <p style={{ color: content.extraSection.styles.textColor }} className="text-lg md:text-xl leading-relaxed whitespace-pre-line">
+                                    {content.extraSection.description}
+                                </p>
+                                <ul className="mt-6 space-y-3">
+                                    {content.extraSection.items.map((item, idx) => (
+                                        <li key={idx} className="flex items-center gap-3">
+                                            <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                                            <span className="text-base md:text-lg text-gray-700">{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="flex flex-col gap-4">
+                                <ScrollReveal direction="right" className="w-full flex justify-center">
+                                    <img 
+                                        src={content.extraSection.image} 
+                                        alt="Extra Section" 
+                                        className="w-full rounded-3xl mx-auto object-cover" 
+                                    />
+                                </ScrollReveal>
+                            </div>
+                        </div>
+                        {content.extraSection.footnoteLogo && (
+                             <div className="max-w-6xl mx-auto px-5">
+                                <div style={{ textAlign: 'left' }}> 
+                                     <img 
+                                        src={content.extraSection.footnoteLogo} 
+                                        alt="Almex Logo" 
+                                        className="h-28 md:h-48 w-auto object-contain" 
+                                     />
+                                </div>
+                            </div>
+                        )}
+                    </section>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(<App />);
+    </script>
+</body>
+</html>
